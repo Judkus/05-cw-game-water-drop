@@ -138,8 +138,62 @@ body {
     .game-wrapper, .score-panel, #game-container {
         width: 95vw;
     }
-    
     #game-container {
         height: 70vh;
+    }
+    .score-panel {
+        flex-direction: column;
+        gap: 10px;
+        width: 95vw;
+        align-items: stretch;
+    }
+    .score, .timer, #start-btn {
+        font-size: 20px;
+    }
+    .game-title {
+        font-size: 32px;
+    }
+    .game-tagline {
+        font-size: 16px;
+    }
+    #feedback-message {
+        font-size: 20px !important;
+    }
+}
+
+@media (max-width: 500px) {
+    .game-wrapper, .score-panel, #game-container {
+        width: 100vw;
+        min-width: 0;
+    }
+    #game-container {
+        height: 50vh;
+        min-height: 200px;
+    }
+    .score-panel {
+        padding: 5px;
+        font-size: 16px;
+    }
+    .score, .timer, #start-btn {
+        font-size: 16px;
+    }
+    .game-title {
+        font-size: 22px;
+    }
+    .game-tagline {
+        font-size: 12px;
+    }
+    #feedback-message {
+        font-size: 14px !important;
+    }
+    .water-drop, .bad-drop {
+        width: 32px !important;
+        height: 32px !important;
+        min-width: 24px;
+        min-height: 24px;
+    }
+    .water-can {
+        width: 28px !important;
+        height: 28px !important;
     }
 }

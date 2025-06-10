@@ -4,6 +4,18 @@ let dropMaker; // Will store our timer that creates drops regularly
 let timerInterval; // Timer for countdown
 let score = 0; // Player's score
 let timeLeft = 30; // 30-second timer
+const feedback = document.getElementById("feedback-message");
+
+const winMessages = [
+  "Amazing! You brought clean water to the village!",
+  "You did it! The community celebrates your effort!",
+  "Victory! Every drop counts, and you caught enough!"
+];
+const loseMessages = [
+  "Try again! The village still needs more clean water.",
+  "Almost there! Avoid the dirty drops next time.",
+  "Keep going! Clean water is just a few drops away."
+];
 
 // Wait for button click to start the game
 document.getElementById("start-btn").addEventListener("click", startGame);
@@ -17,6 +29,8 @@ function startGame() {
   timeLeft = 30;
   document.getElementById("score").textContent = score;
   document.getElementById("time").textContent = timeLeft;
+  feedback.style.display = "none";
+  feedback.textContent = "";
 
   // Create new drops every second (1000 milliseconds)
   dropMaker = setInterval(createDrop, 1000);
@@ -39,7 +53,23 @@ function endGame() {
   // Remove all drops from the game container
   const container = document.getElementById("game-container");
   container.innerHTML = "";
-  // Optionally, you can add a message here to show the game is over
+  // Show feedback message
+  let messageArr = score >= 20 ? winMessages : loseMessages;
+  let msg = messageArr[Math.floor(Math.random() * messageArr.length)];
+  feedback.textContent = msg + ` (Final Score: ${score})`;
+  feedback.style.display = "block";
+  updateScoreDisplay();
+}
+
+function updateScoreDisplay() {
+  const scoreElem = document.getElementById("score");
+  scoreElem.textContent = score;
+  // Animate score color for feedback
+  scoreElem.style.transition = "color 0.2s";
+  scoreElem.style.color = "#FFC907"; // highlight color
+  setTimeout(() => {
+    scoreElem.style.color = "#131313"; // revert to default
+  }, 300);
 }
 
 function createDrop() {
@@ -77,13 +107,21 @@ function createDrop() {
   drop.addEventListener("click", function() {
     if (!gameRunning) return;
     if (isBadDrop) {
-      // Bad drop: subtract 2 points (min 0)
+      // Bad drop: subtract 2 points (min 0) and show penalty feedback
       score = Math.max(0, score - 2);
+      feedback.textContent = "Oh no! That was dirty water. -2 points.";
+      feedback.style.color = "#F5402C";
+      feedback.style.display = "block";
+      setTimeout(() => { feedback.style.display = "none"; }, 1200);
     } else {
-      // Good drop: add 1 point
+      // Good drop: add 1 point and show positive feedback
       score++;
+      feedback.textContent = "+1! Clean water collected!";
+      feedback.style.color = "#2E9DF7";
+      feedback.style.display = "block";
+      setTimeout(() => { feedback.style.display = "none"; }, 800);
     }
-    document.getElementById("score").textContent = score;
+    updateScoreDisplay();
     drop.remove(); // Remove drop when clicked
   });
 
@@ -108,7 +146,11 @@ function createDrop() {
   can.addEventListener("click", function() {
     if (!gameRunning) return;
     score += 3;
-    document.getElementById("score").textContent = score;
+    feedback.textContent = "+3! Water can bonus!";
+    feedback.style.color = "#FFC907";
+    feedback.style.display = "block";
+    setTimeout(() => { feedback.style.display = "none"; }, 900);
+    updateScoreDisplay();
     can.remove();
   });
 
