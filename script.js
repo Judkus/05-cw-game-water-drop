@@ -19,6 +19,7 @@ const loseMessages = [
 
 // Wait for button click to start the game
 document.getElementById("start-btn").addEventListener("click", startGame);
+document.getElementById("reset-btn").addEventListener("click", resetGame);
 
 function startGame() {
   // Prevent multiple games from running at once
@@ -59,6 +60,19 @@ function endGame() {
   feedback.textContent = msg + ` (Final Score: ${score})`;
   feedback.style.display = "block";
   updateScoreDisplay();
+}
+
+function resetGame() {
+  gameRunning = false;
+  clearInterval(dropMaker);
+  clearInterval(timerInterval);
+  score = 0;
+  timeLeft = 30;
+  document.getElementById("score").textContent = score;
+  document.getElementById("time").textContent = timeLeft;
+  document.getElementById("game-container").innerHTML = "";
+  feedback.style.display = "none";
+  feedback.textContent = "";
 }
 
 function updateScoreDisplay() {
@@ -159,3 +173,45 @@ function createDrop() {
     can.remove();
   }, 2500);
 }
+
+function createObstacle() {
+  const obstacle = document.createElement("div");
+  obstacle.className = "obstacle";
+  obstacle.title = "Avoid!";
+  // Random size and position
+  const size = 50 + Math.random() * 30;
+  obstacle.style.width = obstacle.style.height = `${size}px`;
+  const gameWidth = document.getElementById("game-container").offsetWidth;
+  const xPosition = Math.random() * (gameWidth - size);
+  obstacle.style.left = xPosition + "px";
+  obstacle.style.top = "0px";
+  obstacle.style.position = "absolute";
+  obstacle.style.background = "#F16061 url('img/cw_logo.png') center/contain no-repeat";
+  obstacle.style.border = "3px solid #F5402C";
+  obstacle.style.borderRadius = "50%";
+  obstacle.style.zIndex = 10;
+  obstacle.style.boxShadow = "0 2px 8px rgba(245,64,44,0.15)";
+  obstacle.style.animation = "obstacleFall 3.5s linear forwards";
+  document.getElementById("game-container").appendChild(obstacle);
+
+  obstacle.addEventListener("animationend", () => {
+    obstacle.remove();
+  });
+
+  obstacle.addEventListener("click", function() {
+    if (!gameRunning) return;
+    score = Math.max(0, score - 5);
+    feedback.textContent = "Ouch! Obstacle hit. -5 points.";
+    feedback.style.color = "#F5402C";
+    feedback.style.display = "block";
+    updateScoreDisplay();
+    setTimeout(() => { feedback.style.display = "none"; }, 1200);
+    obstacle.remove();
+  });
+}
+
+// Add obstacle creation to the game loop
+dropMaker = setInterval(() => {
+  createDrop();
+  if (Math.random() < 0.35) createObstacle(); // 35% chance per second
+}, 1000);
