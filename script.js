@@ -77,4 +77,34 @@ function createDrop() {
     document.getElementById("score").textContent = score;
     drop.remove(); // Remove drop when clicked
   });
+
+  // --- Add a clickable can element ---
+  const can = document.createElement("img");
+  can.src = "img/water-can.png";
+  can.alt = "Water Can";
+  can.className = "water-can";
+  can.style.position = "absolute";
+  can.style.width = "50px";
+  can.style.height = "50px";
+  // Place can randomly near the bottom
+  const canX = Math.random() * (gameWidth - 50);
+  can.style.left = canX + "px";
+  can.style.bottom = "10px";
+  can.style.cursor = "pointer";
+
+  // Add can to the game container
+  document.getElementById("game-container").appendChild(can);
+
+  // Can click event: +3 points
+  can.addEventListener("click", function() {
+    if (!gameRunning) return;
+    score += 3;
+    document.getElementById("score").textContent = score;
+    can.remove();
+  });
+
+  // Remove can after 2.5 seconds if not clicked
+  setTimeout(() => {
+    can.remove();
+  }, 2500);
 }
