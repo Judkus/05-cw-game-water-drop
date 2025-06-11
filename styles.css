@@ -89,7 +89,7 @@ body {
 }
 
 .score {
-    flex: 0 1
+    flex: 0 1 auto;
     color: #159A48; /* charity: water dark green */
     font-size: 24px;
     font-weight: bold;
