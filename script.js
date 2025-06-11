@@ -25,6 +25,9 @@ function startGame() {
   // Prevent multiple games from running at once
   if (gameRunning) return;
 
+  // Only start if not already ended (feedback message is not visible)
+  if (feedback.style.display === "block") return;
+
   gameRunning = true;
   score = 0;
   timeLeft = 30;
@@ -33,8 +36,11 @@ function startGame() {
   feedback.style.display = "none";
   feedback.textContent = "";
 
-  // Create new drops every second (1000 milliseconds)
-  dropMaker = setInterval(createDrop, 1000);
+  // Start drop and obstacle creation only when game starts
+  dropMaker = setInterval(() => {
+    createDrop();
+    if (Math.random() < 0.35) createObstacle();
+  }, 1000);
   // Start the timer countdown
   timerInterval = setInterval(updateTimer, 1000);
 }
@@ -51,7 +57,7 @@ function endGame() {
   gameRunning = false;
   clearInterval(dropMaker);
   clearInterval(timerInterval);
-  // Remove all drops from the game container
+  // Remove all drops and obstacles from the game container
   const container = document.getElementById("game-container");
   container.innerHTML = "";
   // Show feedback message
@@ -60,6 +66,15 @@ function endGame() {
   feedback.textContent = msg + ` (Final Score: ${score})`;
   feedback.style.display = "block";
   updateScoreDisplay();
+  if (score >= 20) {
+    showConfetti();
+    feedback.style.transition = "opacity 0.5s";
+    feedback.style.opacity = 1;
+  } else {
+    // Keep lose message visible until reset as well
+    feedback.style.transition = "opacity 0.5s";
+    feedback.style.opacity = 1;
+  }
 }
 
 function resetGame() {
@@ -73,6 +88,7 @@ function resetGame() {
   document.getElementById("game-container").innerHTML = "";
   feedback.style.display = "none";
   feedback.textContent = "";
+  feedback.style.opacity = 1;
 }
 
 function updateScoreDisplay() {
@@ -99,6 +115,12 @@ function createDrop() {
   const sizeMultiplier = Math.random() * 0.8 + 0.5;
   const size = initialSize * sizeMultiplier;
   drop.style.width = drop.style.height = `${size}px`;
+
+  // Make the hit box larger for easier tapping/clicking
+  drop.style.pointerEvents = "auto";
+  drop.style.boxSizing = "content-box";
+  drop.style.padding = "18px"; // Increase clickable area
+  drop.style.margin = "-18px"; // Offset padding to keep visual size
 
   // Position the drop randomly across the game width
   // Subtract 60 pixels to keep drops fully inside the container
@@ -210,8 +232,34 @@ function createObstacle() {
   });
 }
 
-// Add obstacle creation to the game loop
-dropMaker = setInterval(() => {
-  createDrop();
-  if (Math.random() < 0.35) createObstacle(); // 35% chance per second
-}, 1000);
+// --- New confetti function ---
+function showConfetti() {
+  // Simple confetti effect using emoji
+  const confettiContainer = document.createElement("div");
+  confettiContainer.style.position = "fixed";
+  confettiContainer.style.left = 0;
+  confettiContainer.style.top = 0;
+  confettiContainer.style.width = "100vw";
+  confettiContainer.style.height = "100vh";
+  confettiContainer.style.pointerEvents = "none";
+  confettiContainer.style.zIndex = 9999;
+  document.body.appendChild(confettiContainer);
+
+  for (let i = 0; i < 40; i++) {
+    const confetti = document.createElement("span");
+    confetti.textContent = ["🎉", "💧", "✨", "🎊"][Math.floor(Math.random()*4)];
+    confetti.style.position = "absolute";
+    confetti.style.left = Math.random() * 100 + "vw";
+    confetti.style.top = "-40px";
+    confetti.style.fontSize = (24 + Math.random()*24) + "px";
+    confetti.style.transition = `top 1.5s cubic-bezier(.4,2,.6,1), left 1.5s`;
+    confettiContainer.appendChild(confetti);
+    setTimeout(() => {
+      confetti.style.top = (60 + Math.random()*30) + "vh";
+      confetti.style.left = (Math.random()*100) + "vw";
+    }, 50);
+  }
+  setTimeout(() => {
+    confettiContainer.remove();
+  }, 1800);
+}
