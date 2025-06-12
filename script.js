@@ -145,17 +145,64 @@ function createDrop() {
     if (isBadDrop) {
       // Bad drop: subtract 2 points (min 0) and show penalty feedback
       score = Math.max(0, score - 2);
-      feedback.textContent = "Oh no! That was dirty water. -2 points.";
-      feedback.style.color = "#F5402C";
-      feedback.style.display = "block";
-      setTimeout(() => { feedback.style.display = "none"; }, 1200);
+      // Show floating '-2' directly next to the red droplet (to the right)
+      const minusTwo = document.createElement("div");
+      minusTwo.textContent = "-2! Dirty water.";
+      minusTwo.style.position = "absolute";
+      minusTwo.style.left = (drop.offsetLeft + drop.offsetWidth + 8) + "px";
+      minusTwo.style.top = (drop.offsetTop + drop.offsetHeight/2 - 18) + "px";
+      minusTwo.style.color = "#F5402C";
+      minusTwo.style.fontWeight = "bold";
+      minusTwo.style.fontSize = "22px";
+      minusTwo.style.background = "#fff";
+      minusTwo.style.border = "2px solid #FF902A";
+      minusTwo.style.borderRadius = "8px";
+      minusTwo.style.padding = "6px 14px";
+      minusTwo.style.boxShadow = "0 2px 4px rgba(245,64,44,0.08)";
+      minusTwo.style.pointerEvents = "none";
+      minusTwo.style.zIndex = 1000;
+      minusTwo.style.transition = "opacity 0.5s, transform 0.7s";
+      minusTwo.style.opacity = 1;
+      minusTwo.style.transform = "translateY(0)";
+      document.getElementById("game-container").appendChild(minusTwo);
+      setTimeout(() => {
+        minusTwo.style.opacity = 0;
+        minusTwo.style.transform = "translateY(-40px)";
+      }, 10);
+      setTimeout(() => {
+        minusTwo.remove();
+      }, 800);
     } else {
       // Good drop: add 1 point and show positive feedback
       score++;
-      feedback.textContent = "+1! Clean water collected!";
-      feedback.style.color = "#2E9DF7";
-      feedback.style.display = "block";
-      setTimeout(() => { feedback.style.display = "none"; }, 800);
+      // Show floating '+1' directly next to the droplet (to the right)
+      const plusOne = document.createElement("div");
+      plusOne.textContent = "+1! Clean water collected!";
+      plusOne.style.position = "absolute";
+      // Position to the right of the droplet
+      plusOne.style.left = (drop.offsetLeft + drop.offsetWidth + 8) + "px";
+      plusOne.style.top = (drop.offsetTop + drop.offsetHeight/2 - 18) + "px";
+      plusOne.style.color = "#2E9DF7";
+      plusOne.style.fontWeight = "bold";
+      plusOne.style.fontSize = "22px";
+      plusOne.style.background = "#fff";
+      plusOne.style.border = "2px solid #FFC907";
+      plusOne.style.borderRadius = "8px";
+      plusOne.style.padding = "6px 14px";
+      plusOne.style.boxShadow = "0 2px 4px rgba(46,157,247,0.08)";
+      plusOne.style.pointerEvents = "none";
+      plusOne.style.zIndex = 1000;
+      plusOne.style.transition = "opacity 0.5s, transform 0.7s";
+      plusOne.style.opacity = 1;
+      plusOne.style.transform = "translateY(0)";
+      document.getElementById("game-container").appendChild(plusOne);
+      setTimeout(() => {
+        plusOne.style.opacity = 0;
+        plusOne.style.transform = "translateY(-40px)";
+      }, 10);
+      setTimeout(() => {
+        plusOne.remove();
+      }, 800);
     }
     updateScoreDisplay();
     drop.remove(); // Remove drop when clicked
